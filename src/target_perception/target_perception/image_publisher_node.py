@@ -14,9 +14,11 @@ from cv_bridge import CvBridge
 class PublisherNode(Node):
     def __init__(self, node_name):
         super().__init__(node_name)
+        self.bridge = CvBridge()
+        image = self.bridge.cv2_to_imgmsg(cv_image, encoding='bgr8')
         self.publisher_ = self.create_publisher(Image, '/synthetic_image', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)
-        self.bridge = CvBridge()
+        
 
         # ✅ 新增：记录节点启动的时间（用于计算时间差，生成动态运动）
         self.start_time = time.time()
@@ -24,6 +26,8 @@ class PublisherNode(Node):
         self.get_logger().info('图像发布节点已启动')
 
     def timer_callback(self):
+        width = 640
+        highth = 480
         # 1. 生成黑色底图
         image = np.zeros((480, 640, 3), dtype=np.uint8)
 
